@@ -1,11 +1,8 @@
-''' Paste licence here '''
-
-
 bl_info = {
     "name": "http://image.jpeg",
     "description": "Download and load images directly into Blender by entering an image adress/URL",
     "author": "Nils Soderman",
-    "version": (0, 0, 3),
+    "version": (0, 1, 0),
     "blender": (2, 78, 0),
     "location": "UV/Image Editor & Spacebar menu",
     "warning": "",
@@ -13,8 +10,6 @@ bl_info = {
     "tracker_url": "http://www.rymdnisse.net/contact/",
     "category": "Import-Export"
 }
-
-
 
 # Import Libraries
 import bpy
@@ -31,7 +26,9 @@ updater.repo = "http-image.jpeg"
 updater.current_version = bl_info["version"]
 
 
-# User Preferences
+# ---------------------------------------------------------------------
+#   User Preferences
+# ---------------------------------------------------------------------
 class DemoPreferences(bpy.types.AddonPreferences):
 	bl_idname = __package__
 
@@ -46,13 +43,13 @@ class DemoPreferences(bpy.types.AddonPreferences):
 	updater_intrval_months = bpy.props.IntProperty(
 		name='Months',
 		description = "Number of months between checking for updates",
-		default=0,
+		default=1,
 		min=0
 		)
 	updater_intrval_days = bpy.props.IntProperty(
 		name='Days',
 		description = "Number of days between checking for updates",
-		default=7,
+		default=0,
 		min=0,
 		)
 	updater_intrval_hours = bpy.props.IntProperty(
@@ -85,7 +82,9 @@ class DemoPreferences(bpy.types.AddonPreferences):
 
 
 
-# Operator
+# ---------------------------------------------------------------------
+#   Operator
+# ---------------------------------------------------------------------
 class Image_Download(bpy.types.Operator):
     """Download & open an image from an image adress/URL"""
     bl_idname = "image.download_image_url"
