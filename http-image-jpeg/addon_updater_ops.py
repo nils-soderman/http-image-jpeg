@@ -24,7 +24,7 @@ import os
 # Must declare this before classes are loaded
 # otherwise the bl_idnames will not match and have errors.
 # Must be all lowercase and no spaces
-updater.addon = "addon_updater_demo"
+updater.addon = "http_image_jpeg_update"
 
 
 # -----------------------------------------------------------------------------
@@ -548,8 +548,15 @@ def update_settings_ui(self, context):
 	box = layout.box()
 
 	# auto-update settings
-	box.label("Updater Settings")
 	row = box.row()
+	#row.label("Updater Settings")
+	if settings.updater_showhide:
+		row.prop(settings, "updater_showhide", text="Updater Settings", icon="TRIA_DOWN")#, emboss=False)
+	else:
+		row.prop(settings, "updater_showhide", text="Updater Settings", icon="TRIA_RIGHT")#, emboss=False)
+		return
+	row = box.row()
+
 
 	# special case to tell user to restart blender, if set that way
 	if updater.auto_reload_post_update == False:

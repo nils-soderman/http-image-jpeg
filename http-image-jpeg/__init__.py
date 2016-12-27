@@ -5,7 +5,7 @@ bl_info = {
     "name": "http://image.jpeg",
     "description": "Download and load images directly into Blender by entering an image adress/URL",
     "author": "Nils Soderman",
-    "version": (0, 0, 2),
+    "version": (0, 0, 3),
     "blender": (2, 78, 0),
     "location": "UV/Image Editor & Spacebar menu",
     "warning": "",
@@ -29,6 +29,60 @@ from . import addon_updater_ops
 updater.user = "rymdnisse"
 updater.repo = "http-image.jpeg"
 updater.current_version = bl_info["version"]
+
+
+# User Preferences
+class DemoPreferences(bpy.types.AddonPreferences):
+	bl_idname = __package__
+
+	# addon updater preferences
+
+	auto_check_update = bpy.props.BoolProperty(
+		name = "Auto-check for Update",
+		description = "If enabled, auto-check for updates using an interval",
+		default = False,
+		)
+
+	updater_intrval_months = bpy.props.IntProperty(
+		name='Months',
+		description = "Number of months between checking for updates",
+		default=0,
+		min=0
+		)
+	updater_intrval_days = bpy.props.IntProperty(
+		name='Days',
+		description = "Number of days between checking for updates",
+		default=7,
+		min=0,
+		)
+	updater_intrval_hours = bpy.props.IntProperty(
+		name='Hours',
+		description = "Number of hours between checking for updates",
+		default=0,
+		min=0,
+		max=23
+		)
+	updater_intrval_minutes = bpy.props.IntProperty(
+		name='Minutes',
+		description = "Number of minutes between checking for updates",
+		default=0,
+		min=0,
+		max=59
+		)
+	updater_showhide = bpy.props.BoolProperty(
+		name='Show/Hide',
+		description = "Show/Hide the updater settings.",
+		default=False
+		)
+
+	def draw(self, context):
+
+		layout = self.layout
+
+		# Updater draw function
+		addon_updater_ops.update_settings_ui(self,context)
+
+
 
 
 # Operator
