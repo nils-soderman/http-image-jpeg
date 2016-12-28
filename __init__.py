@@ -30,54 +30,77 @@ updater.current_version = bl_info["version"]
 #   User Preferences
 # ---------------------------------------------------------------------
 class DemoPreferences(bpy.types.AddonPreferences):
-	bl_idname = __package__
+    bl_idname = __package__
 
-	# addon updater preferences
+    # addon updater preferences
 
-	auto_check_update = bpy.props.BoolProperty(
-		name = "Auto-check for Update",
-		description = "If enabled, auto-check for updates using an interval",
-		default = False,
-		)
+    auto_check_update = bpy.props.BoolProperty(
+    	name = "Auto-check for Update",
+    	description = "If enabled, auto-check for updates using an interval",
+    	default = False,
+    	)
 
-	updater_intrval_months = bpy.props.IntProperty(
-		name='Months',
-		description = "Number of months between checking for updates",
-		default=1,
-		min=0
-		)
-	updater_intrval_days = bpy.props.IntProperty(
-		name='Days',
-		description = "Number of days between checking for updates",
-		default=0,
-		min=0,
-		)
-	updater_intrval_hours = bpy.props.IntProperty(
-		name='Hours',
-		description = "Number of hours between checking for updates",
-		default=0,
-		min=0,
-		max=23
-		)
-	updater_intrval_minutes = bpy.props.IntProperty(
-		name='Minutes',
-		description = "Number of minutes between checking for updates",
-		default=0,
-		min=0,
-		max=59
-		)
-	updater_showhide = bpy.props.BoolProperty(
-		name='Show/Hide',
-		description = "Show/Hide the updater settings.",
-		default=False
-		)
+    updater_intrval_months = bpy.props.IntProperty(
+    	name='Months',
+    	description = "Number of months between checking for updates",
+    	default=1,
+    	min=0
+    	)
+    updater_intrval_days = bpy.props.IntProperty(
+    	name='Days',
+    	description = "Number of days between checking for updates",
+    	default=0,
+    	min=0,
+    	)
+    updater_intrval_hours = bpy.props.IntProperty(
+    	name='Hours',
+    	description = "Number of hours between checking for updates",
+    	default=0,
+    	min=0,
+    	max=23
+    	)
+    updater_intrval_minutes = bpy.props.IntProperty(
+    	name='Minutes',
+    	description = "Number of minutes between checking for updates",
+    	default=0,
+    	min=0,
+    	max=59
+    	)
+    updater_showhide = bpy.props.BoolProperty(
+    	name='Show/Hide',
+    	description = "Show/Hide the updater settings.",
+    	default=False
+    	)
+    save_images = bpy.props.BoolProperty(
+    	name='Save image externally on your hard drive.',
+    	description = "Save the images in a folder on your harddrive.",
+    	default=False
+    	)
+    pack_images = bpy.props.BoolProperty(
+    	name='Pack images',
+    	description = "Pack the images into the .blend file.",
+    	default=True
+    	)
+    image_dir = bpy.props.StringProperty(
+    	name='Directory',
+    	description = "Directory to place & save the images you download.",
+    	default="",
+        subtype="DIR_PATH"
+    	)
 
-	def draw(self, context):
+    def draw(self, context):
+        settings = context.user_preferences.addons[__package__].preferences
+        layout = self.layout
 
-		layout = self.layout
+        col = layout.column(align=True).split(.3)
+        col.prop(settings, "save_images", text="Save images on drive")
+        col = col.column(align=True)
+        col.active = settings.save_images
+        col.prop(settings, "image_dir", text="")
+        col.prop(settings, "pack_images")
 
-		# Updater draw function
-		addon_updater_ops.update_settings_ui(self,context)
+        # Updater draw function
+        addon_updater_ops.update_settings_ui(self,context)
 
 
 
@@ -95,7 +118,7 @@ class Image_Download(bpy.types.Operator):
         # ---------------------------------------------------------------------
         # Preperations
         # ---------------------------------------------------------------------
-
+        user_pref = context.user_preferences.addons[__package__].preferences
 
         # Remove extra info from url after a "?"
         url = self.url
@@ -103,11 +126,18 @@ class Image_Download(bpy.types.Operator):
             url = url.split("?")[0]
 
         # Construct nessisary paths
-        dirpath = os.path.dirname(__file__)
+        if not user_pref.save_images and user_pref.image_dir != "":
+            dirpath = os.path.dirname(__file__)
+            temp_path = os.path.join(dirpath, "temp")
+        else:
+            temp_path = user_pref.image_dir
         filename = os.path.split(url)[1]
-        temp_path = os.path.join(dirpath, "temp")
         path = os.path.join(temp_path, filename)
-        ext = filename.split(".")[1]
+        try:
+            # The url may not contain a file extension, e.g. a thumbnail image from Google
+            ext = filename.split(".")[1]
+        except:
+            ext = "png"
 
         # Create temp folder if it doesn't exist
         if not os.path.exists(temp_path):
@@ -201,7 +231,8 @@ class Image_Download(bpy.types.Operator):
         # Load image
         image = bpy.data.images.load(path)
         image.name = filename
-        image.pack()
+        if (not user_pref.save_images) or (user_pref.save_images and user_pref.pack_images):
+            image.pack()
 
 
         # Open image in the context to where the function is called.
@@ -248,7 +279,8 @@ class Image_Download(bpy.types.Operator):
 
 
         # Delete temp image
-        os.remove(path)
+        if not user_pref.save_images:
+            os.remove(path)
 
         return {'FINISHED'}
 
