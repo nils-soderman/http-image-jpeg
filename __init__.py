@@ -145,9 +145,12 @@ class Image_Download(bpy.types.Operator):
             url = url.split("?")[0]
 
         # Construct nessisary paths
-        if not user_pref.save_images and user_pref.image_dir != "":
+        if not user_pref.save_images or user_pref.image_dir == "":
             dirpath = os.path.dirname(__file__)
             temp_path = os.path.join(dirpath, "temp")
+            # Create temp folder if it doesn't exist
+            if not os.path.exists(temp_path):
+                os.makedirs(temp_path)
         else:
             temp_path = user_pref.image_dir
         filename = os.path.split(url)[1]
@@ -158,9 +161,8 @@ class Image_Download(bpy.types.Operator):
         except:
             ext = "png"
 
-        # Create temp folder if it doesn't exist
-        if not os.path.exists(temp_path):
-            os.makedirs(temp_path)
+
+
 
 
         # ---------------------------------------------------------------------
