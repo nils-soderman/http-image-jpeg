@@ -1,4 +1,4 @@
-# http-image.jpeg
+# http://image.jpeg
 A free addon for Blender which allows you to download &amp; open images by providing the image address/url.
 The addon will download the image and pack it into the current blend file.
 
