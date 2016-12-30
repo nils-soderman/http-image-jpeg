@@ -2,7 +2,7 @@ bl_info = {
     "name": "http://image.jpeg",
     "description": "Download and load images directly into Blender by entering an image adress/URL",
     "author": "Nils Soderman",
-    "version": (0, 1, 0),
+    "version": (1, 0, 0),
     "blender": (2, 78, 0),
     "location": "UV/Image Editor & Spacebar menu",
     "warning": "",
